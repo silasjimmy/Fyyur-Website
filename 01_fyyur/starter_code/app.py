@@ -53,7 +53,7 @@ class Venue(db.Model):
     website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(200))
-    shows = db.relationship('Show', backref='venue', lazy=True)
+    shows = db.relationship('Show', backref='venue', cascade='all, delete, delete-orphan', lazy=True)
 
     def __repr__(self):
         return self.name
@@ -81,7 +81,7 @@ class Artist(db.Model):
     website_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean)
     seeking_description = db.Column(db.String(200))
-    shows = db.relationship('Show', backref='artist', lazy=True)
+    shows = db.relationship('Show', backref='artist', cascade='all, delete, delete-orphan', lazy=True)
 
     def past_shows(self):
         return [show for show in self.shows if today > show.start_time]
@@ -300,20 +300,24 @@ def delete_venue(venue_id):
     # TODO: Complete this endpoint for taking a venue_id, and using
     # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
 
-    # try:
-    #     Venue.query.filter_by(id=venue_id).delete()
-    #     db.session.commit()
-    #     flash("Venue deleted successfully!")
-    # except:
-    #     db.session.rollback()
-    #     flash("Venue was not deleted. Something went wrong!")
-    # finally:
-    #     db.session.close()
+    venue = Venue.query.filter_by(id=venue_id).one()
+    print(venue)
+
+    try:
+        venue = Venue.query.filter_by(id=venue_id).one()
+        db.session.delete(venue)
+        db.session.commit()
+        flash("Venue deleted successfully!")
+    except:
+        db.session.rollback()
+        flash("Venue was not deleted. Something went wrong!")
+    finally:
+        db.session.close()
 
     # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
     # clicking that button delete it from the db then redirect the user to the homepage
 
-    return None
+    return redirect(url_for('index'))
 
 #  Artists
 #  ----------------------------------------------------------------
@@ -518,20 +522,6 @@ def create_artist_submission():
         db.session.close()
 
     return render_template('pages/home.html')
-
-@app.route('/artists/<artist_id>', methods=['DELETE'])
-def delete_artist(artist_id):
-    # try:
-    #     Artist.query.filter_by(id=venue_id).delete()
-    #     db.session.commit()
-    #     flash("Artist was deleted successfully!")
-    # except:
-    #     db.session.rollback()
-    #     flash("Artist was not deleted. Something went wrong!")
-    # finally:
-    #     db.session.close()
-
-    return None
 
 
 #  Shows

@@ -23,16 +23,10 @@ if (document.querySelector('#delete-venue') != null) {
 
     fetch('/venues/' + venue_id, {
       method: 'DELETE'
-    });
-  })
-}
-
-if (document.querySelector('#delete-artist') != null) {
-  document.querySelector('#delete-artist').addEventListener('click', e => {
-    let artist_id = e.target.dataset.id;
-
-    fetch('/artists/' + artist_id, {
-      method: 'DELETE'
-    });
+    }).then(response => {
+      window.location.href = response.url;
+    }).catch(error => {
+      console.log(error);
+    })
   })
 }
