@@ -17,4 +17,22 @@ window.log = function(){
 
 
 // place any jQuery/helper plugins in here, instead of separate, slower script files.
+if (document.querySelector('#delete-venue') != null) {
+  document.querySelector('#delete-venue').addEventListener('click', e => {
+    let venue_id = e.target.dataset.id;
 
+    fetch('/venues/' + venue_id, {
+      method: 'DELETE'
+    });
+  })
+}
+
+if (document.querySelector('#delete-artist') != null) {
+  document.querySelector('#delete-artist').addEventListener('click', e => {
+    let artist_id = e.target.dataset.id;
+
+    fetch('/artists/' + artist_id, {
+      method: 'DELETE'
+    });
+  })
+}
